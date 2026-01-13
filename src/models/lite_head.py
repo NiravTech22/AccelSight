@@ -1,5 +1,5 @@
-import torch
 import torch.nn as nn
+
 
 class PredictionHead(nn.Module):
     """General purpose 1x1 conv prediction head."""
@@ -15,6 +15,7 @@ class PredictionHead(nn.Module):
     def forward(self, x):
         return self.head(x)
 
+
 class LiteDetectionHead(nn.Module):
     """
     Combined Objectness and BBox head.
@@ -28,8 +29,9 @@ class LiteDetectionHead(nn.Module):
     def forward(self, x):
         out = self.head(x)
         objectness = out[:, :1, :, :]
-        bbox = out[:, 1:, :, :]
+        bbox = out[:, 1:, :, ...]
         return objectness, bbox
+
 
 class LiteRegressionHead(nn.Module):
     """Head for Velocity or other vector regression tasks."""

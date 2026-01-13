@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+
 
 class VelocityLoss(nn.Module):
     """
@@ -24,7 +24,7 @@ class VelocityLoss(nn.Module):
         # Apply mask
         loss = self.criterion(pred_vel, gt_vel)
         loss = loss * mask.expand_as(loss)
-        
+
         if self.magnitude_weighting:
             # Increase importance of error for fast moving objects
             mag = torch.norm(gt_vel, p=2, dim=1, keepdim=True)
