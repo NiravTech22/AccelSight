@@ -25,17 +25,6 @@ It supports both simulation environments (e.g., Isaac Sim) and real robotic hard
 ## System Architecture (High-Level)
 
 ```mermaid
-graph TD
-    Sensors["Sensors / Simulation"] --> Preprocessing["Preprocessing (CUDA)"]
-    Preprocessing --> Inference["Neural Inference (GPU)"]
-    Inference --> Postprocessing["Post-processing (CUDA)"]
-    Postprocessing --> Robotics["Robotics Interface (ROS / Control Stack)"]
-```
----
-
-## Mermaid Diagram of System Architecture
-
-```mermaid
 flowchart TD
     Camera["Camera / RGB-D / LiDAR"]
     SimFeed["Simulation Feed (Isaac Sim)"]
@@ -52,4 +41,4 @@ flowchart TD
     PreNorm --> PreResize --> PreAug --> Model
     Model --> TensorRT --> Filter --> Format --> ROSNode --> Actuation
 ```
-
+---
