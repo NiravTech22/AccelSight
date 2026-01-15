@@ -10,8 +10,7 @@ High-performance GPU-accelerated perception pipeline for autonomous robotic syst
 
 ## Overview
 
-This repository implements a custom-trained perception model and inference pipeline optimized with CUDA acceleration for robotics and autonomous systems.  
-It supports both simulation environments (e.g., Isaac Sim) and real robotic hardware, enabling end-to-end perception from sensor input to actionable outputs.
+This repository implements a custom-trained perception model and inference pipeline optimized with CUDA acceleration for robotics and autonomous systems. It supports a hybrid simulation environment (e.g., Isaac Sim), as well as real robotic hardware, to enable end-to-end perception from sensor input to actionable outputs.
 
 **Primary goals:**
 
