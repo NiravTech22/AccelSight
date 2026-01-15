@@ -3,10 +3,9 @@
 
 // --- Fast NMS Kernel (Heatmap-based) ---
 // Uses 3D indexing: x -> width, y -> height, z -> batch
-extern "C" __global__ void fast_nms_kernel(const float *__restrict__ objectness,
-                                           float *__restrict__ output_mask,
-                                           int batch_size, int height,
-                                           int width, float threshold) {
+__global__ void fast_nms_kernel(const float *__restrict__ objectness,
+                                float *__restrict__ output_mask, int batch_size,
+                                int height, int width, float threshold) {
   int w = blockIdx.x * blockDim.x + threadIdx.x;
   int h = blockIdx.y * blockDim.y + threadIdx.y;
   int b = blockIdx.z;
@@ -55,7 +54,7 @@ extern "C" __global__ void fast_nms_kernel(const float *__restrict__ objectness,
 // --- Coordinate Transform Kernel ---
 // Maps (grid_x, grid_y) + (dx, dy) and depth -> (X, Y, Z)
 // Uses 3D indexing: x -> width, y -> height, z -> batch
-extern "C" __global__ void coordinate_transform_kernel(
+__global__ void coordinate_transform_kernel(
     const float *__restrict__ bboxes,    // (B, 4, H, W) -> [dx, dy, dw, dh]
     const float *__restrict__ depth_map, // (B, 1, H, W)
     float *__restrict__ world_coords,    // (B, 3, H, W) -> [X, Y, Z]
@@ -96,4 +95,30 @@ extern "C" __global__ void coordinate_transform_kernel(
   world_coords[w_offset + 0 * spatial_size + grid_idx] = X;
   world_coords[w_offset + 1 * spatial_size + grid_idx] = Y;
   world_coords[w_offset + 2 * spatial_size + grid_idx] = Z;
+}
+
+// --- Launcher Functions ---
+
+void launch_fast_nms(const float *objectness, float *output_mask,
+                     int batch_size, int height, int width, float threshold) {
+  dim3 threads(16, 16, 1);
+  dim3 blocks((width + threads.x - 1) / threads.x,
+              (height + threads.y - 1) / threads.y, batch_size);
+
+  fast_nms_kernel<<<blocks, threads>>>(objectness, output_mask, batch_size,
+                                       height, width, threshold);
+}
+
+void launch_coordinate_transform(const float *bboxes, const float *depth_map,
+                                 float *world_coords, int batch_size,
+                                 int height, int width, float focal_x,
+                                 float focal_y, float center_x, float center_y,
+                                 float grid_scale_x, float grid_scale_y) {
+  dim3 threads(16, 16, 1);
+  dim3 blocks((width + threads.x - 1) / threads.x,
+              (height + threads.y - 1) / threads.y, batch_size);
+
+  coordinate_transform_kernel<<<blocks, threads>>>(
+      bboxes, depth_map, world_coords, batch_size, height, width, focal_x,
+      focal_y, center_x, center_y, grid_scale_x, grid_scale_y);
 }
